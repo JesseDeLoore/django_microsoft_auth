@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Group
 from django.contrib.auth.validators import UnicodeUsernameValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -31,6 +32,11 @@ class MicrosoftAccount(models.Model):
 
     def __str__(self):
         return self.microsoft_id
+
+
+class MicrosoftSecurityGroup(models.Model):
+    microsoft_id = models.CharField(_("microsoft SG GUID"), max_length=64)
+    user_group = models.OneToOneField(Group, on_delete=models.CASCADE, null=True, related_name="microsoft_security_group")
 
 
 class XboxLiveAccount(models.Model):

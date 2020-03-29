@@ -5,7 +5,7 @@ from django.contrib.auth.backends import ModelBackend
 
 from .client import MicrosoftClient
 from .conf import LOGIN_TYPE_XBL
-from .models import MicrosoftAccount, XboxLiveAccount
+from .models import MicrosoftAccount, XboxLiveAccount, MicrosoftSecurityGroup
 from .utils import get_hook
 
 logger = logging.getLogger("django")
@@ -191,7 +191,7 @@ class MicrosoftAuthenticationBackend(ModelBackend):
 
             microsoft_user.user = user
             microsoft_user.save()
-
+            self._set_security_groups(user, data.get("groups", []))
         return user
 
     def _get_existing_microsoft_account(self, user):
@@ -207,3 +207,9 @@ class MicrosoftAuthenticationBackend(ModelBackend):
                 function(user, self.microsoft.xbox_token)
             else:
                 function(user, self.microsoft.token)
+
+    def _set_security_groups(self, user, group_uuid_list):
+        for g in user.groups.filter(microsoft_security_group__isnull=False):
+            g.remove(user)
+        for msg in MicrosoftSecurityGroup.objects.filter(id__in=group_uuid_list):
+            msg.user_group.add(user)
