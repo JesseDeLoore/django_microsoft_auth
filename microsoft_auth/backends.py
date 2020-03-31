@@ -191,7 +191,8 @@ class MicrosoftAuthenticationBackend(ModelBackend):
 
             microsoft_user.user = user
             microsoft_user.save()
-            self._set_security_groups(user, data.get("groups", []))
+            logging.getLogger(__name__).info("saved user")
+        self._set_security_groups(user, data.get("groups", []))
         return user
 
     def _get_existing_microsoft_account(self, user):
@@ -209,7 +210,9 @@ class MicrosoftAuthenticationBackend(ModelBackend):
                 function(user, self.microsoft.token)
 
     def _set_security_groups(self, user, group_uuid_list):
+        logging.getLogger(__name__).info("setting groups")
+        logging.getLogger(__name__).info(group_uuid_list)
         for g in user.groups.filter(microsoft_security_group__isnull=False):
             g.remove(user)
-        for msg in MicrosoftSecurityGroup.objects.filter(id__in=group_uuid_list):
+        for msg in MicrosoftSecurityGroup.objects.filter(microsoft_id__in=group_uuid_list):
             msg.user_group.add(user)
