@@ -75,6 +75,8 @@ def _register_admins():
     if _do_both or _login_type == LOGIN_TYPE_XBL:
         admin.site.register(XboxLiveAccount, XboxLiveAccountAdmin)
 
+    admin.site.register(MicrosoftSecurityGroup)
+
 
 def _get_inlines():
     _do_both = config.MICROSOFT_AUTH_REGISTER_INACTIVE_ADMIN
