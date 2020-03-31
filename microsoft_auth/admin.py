@@ -34,6 +34,8 @@ base_user_admin = extra_base + [BaseUserAdmin]
 if admin.site.is_registered(User):  # pragma: no branch
     admin.site.unregister(User)
 
+if admin.site.is_registered(Group):
+    admin.site.unregister(Group)
 
 class MicrosoftAccountAdmin(*base_admin):
     readonly_fields = ("microsoft_id",)
