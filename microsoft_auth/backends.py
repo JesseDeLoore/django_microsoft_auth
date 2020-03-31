@@ -213,6 +213,6 @@ class MicrosoftAuthenticationBackend(ModelBackend):
         logging.getLogger(__name__).info("setting groups")
         logging.getLogger(__name__).info(group_uuid_list)
         for g in user.groups.filter(microsoft_security_group__isnull=False):
-            g.remove(user)
+            g.user_set.remove(user)
         for msg in MicrosoftSecurityGroup.objects.filter(microsoft_id__in=group_uuid_list):
-            msg.user_group.add(user)
+            msg.user_group.user_set.add(user)
