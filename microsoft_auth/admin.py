@@ -1,10 +1,11 @@
 from django.apps import apps
 from django.contrib import admin
 from django.contrib.auth import get_user_model
-from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin, GroupAdmin
+from django.contrib.auth.models import Group
 
 from .conf import LOGIN_TYPE_MA, LOGIN_TYPE_XBL, config
-from .models import MicrosoftAccount, XboxLiveAccount
+from .models import MicrosoftAccount, XboxLiveAccount, MicrosoftSecurityGroup
 
 __all__ = [
     "MicrosoftAccountAdmin",
@@ -52,6 +53,11 @@ class XboxLiveAccountInlineAdmin(admin.StackedInline):
     readonly_fields = ("xbox_id", "gamertag")
 
 
+class MicrosoftSecurityGroupInlineAdmin(admin.StackedInline):
+    model = MicrosoftSecurityGroup
+    readonly_fields = ("microsoft_id",)
+
+
 def _register_admins():
     _do_both = config.MICROSOFT_AUTH_REGISTER_INACTIVE_ADMIN
     _login_type = config.MICROSOFT_AUTH_LOGIN_TYPE
@@ -89,6 +95,13 @@ class UserAdmin(*base_user_admin):
         User model """
 
         return _get_inlines()
+
+
+@admin.register(Group)
+class GroupAdmin(GroupAdmin):
+    @property
+    def inlines(self):
+        return [MicrosoftSecurityGroupInlineAdmin]
 
 
 _register_admins()
